@@ -1,0 +1,106 @@
+Sub Stock_info()
+    'Each Worksheet
+    Dim wk As Worksheet
+    For Each wk In Worksheets
+ 
+ 'Set variables for Stock
+ 
+        'Set variable for holding Stock ticker
+        'Dim Ticker As String
+        
+        'Set variable for date open
+        Dim Date_Open As Double
+        Date_Open = 0
+        
+        'Set Variable for date closed
+        Dim Date_Close As Double
+        Date_Close = 0
+        
+        'Set Variable for Yearly Change
+        Dim Yearly_Change As Double
+        Yearly_Change = 0
+        
+        'Set variable for Percent Change
+        Dim Percent_Change As Double
+        Percent_Change = 0
+        
+        'Set variable for total value per stock ticker
+        Dim Volume As Double
+        Volume = 0
+        
+        'Keep track of each ticker in summary table
+        Dim Summary_Table_Row As Long
+        Summary_Table_Row = 2
+        
+        'Set up summary table
+        wk.Cells(1, 11).Value = "Ticker"
+        wk.Cells(1, 12).Value = "Yearly Change"
+        wk.Cells(1, 13).Value = "Percent Change"
+        wk.Cells(1, 14).Value = "Total Volume"
+        
+        'Find last row of data set
+        Dim last_row As Long
+        last_row = wk.Cells(Rows.Count, 1).End(xlUp).Row
+        'MsgBox (last_row)
+    
+    
+    'Loop through all tickers
+        For i = 2 To last_row
+        
+            If wk.Cells(i - 1, 1).Value <> wk.Cells(i, 1).Value Then
+                Date_Open = wk.Cells(i, 3).Value
+            End If
+            
+            'Calculate Volume Total
+            Volume = Volume + wk.Cells(i, 7)
+    
+            If wk.Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+            'Show tickers in Summary Table
+                wk.Cells(Summary_Table_Row, 11).Value = wk.Cells(i, 1).Value
+            
+            'Show Volume in Summary Table
+                wk.Cells(Summary_Table_Row, 14).Value = Volume
+                    
+            'Calculate Yearly change
+                Date_Close = wk.Cells(i, 6).Value
+                Yearly_Change = Date_Close - Date_Open
+                wk.Cells(Summary_Table_Row, 12).Value = Yearly_Change
+            
+            'Formating for Positive and Negative
+                If Yearly_Change >= 0 Then
+                    wk.Cells(Summary_Table_Row, 11).Interior.ColorIndex = 4
+                Else
+                    wk.Cells(Summary_Table_Row, 11).Interior.ColorIndex = 3
+                End If
+    'Calculate Percent Change
+        If Date_Open = 0 And Date_Close = 0 Then
+            Percent_Change = 0
+            wk.Cells(Summary_Table_Row, 13).Value = Percent_Change
+            wk.Cells(Summary_Table_Row, 13).NumberFormat = "0.00%"
+            
+        ElseIf Date_Open = 0 Then
+        
+            Dim New_Stock As String
+            New_Stock = "New Stock"
+            wk.Cells(Summary_Table_Row, 13).Value = New_Stock
+            
+        Else
+            Percent_Change = Yearly_Change / Date_Open
+            wk.Cells(Summary_Table_Row, 13).Value = Percent_Change
+            wk.Cells(Summary_Table_Row, 13).NumberFormat = "0.00%"
+            End If
+        
+        
+            Summary_Table_Row = Summary_Table_Row + 1
+            Volume = 0
+            Date_Open = 0
+            Date_Close = 0
+            Yearly_Change = 0
+            Percent_Change = 0
+            End If
+       Next i
+    Next wk
+    
+ End Sub
+
+
